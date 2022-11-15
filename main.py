@@ -26,8 +26,8 @@ class Coach(StructuredNode):
 #     if(document['n']['labels'][0] == 'COACH'):
 #         Coach(name=id_name).save()
 
-# lebronJames = Player.nodes.first(name="LeBron James")
-# frankVogel = Coach.nodes.first(name="Frank Vogel")
+lebronJames = Player.nodes.first(name="LeBron James")
+frankVogel = Coach.nodes.first(name="Frank Vogel")
 
 # We can save relationship to the variable so we can send it to ES
 # lebronFrank = lebronJames.coach.connect(frankVogel)
@@ -50,6 +50,8 @@ for coach in Coach.nodes:
     objectCoach = {"name": coach.name}
     es.index(index="coach", doc_type="coaches", id=i, body=objectCoach)
     i+=1
+
+# es.index(index="coaches_relationship", doc_type="coaches_relationships", id = 0, body=)
 
 #Getting data from Elasticsearch
 # player1 = es.get(index="player", doc_type="players", id= 0)

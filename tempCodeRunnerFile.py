@@ -1,1 +1,2 @@
-    print(document['n'])
+ session.write_transaction(create_source_address_and_registered_country_relationship, fields['source_address'], attacker_location['country_code'])
+        session.write_transaction(create_source_address_and_target_port_relationship, fields['source_address'], fields['target_port'])
