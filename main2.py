@@ -3,12 +3,17 @@ from neo4j import GraphDatabase
 from Node import *
 from NodeRelationship import *
 from GetNodes import *
+from elasticsearch7 import Elasticsearch
+
 
 cluster = MongoClient("mongodb://localhost:27017")
 db = cluster["netsec_project"]
 collection = db['ssh_commands']
 
 driver = GraphDatabase.driver(uri = "bolt://localhost:7687", auth=("neo4j", "sgunetsec"))
+
+es = Elasticsearch(HOST="http://localhost", PORT=9200)
+
 
 with driver.session() as session:
     cursor = collection.find({})
@@ -27,10 +32,21 @@ with driver.session() as session:
         session.write_transaction(create_source_address_and_registered_country_relationship, fields['source_address'], attacker_location['country_code'])
         session.write_transaction(create_source_address_and_target_port_relationship, fields['source_address'], fields['target_port'])
         session.write_transaction(create_attack_relationship, fields['source_address'], request['description'])
+    
+    # countries = get_country(session)
+    # i = 0
+    # for country in countries.data():
+    #     print(country)
+    #     es.index(index="country", doc_type="countries", id = i,document=country)
+    #     i+=1
 
-    placeholder = session.read_transaction(get_country)
-    print(placeholder.data())
-    print(placeholder.single())
+    attack_relationships = get_attacks_relationship(session)
+    # i = 0
+    for attack in attack_relationships.data():
+        print(attack)
+        # es.index(index="attack", doc_type="attacks", id = i,document=attack)
+        # i+=1
+
 driver.close()
 
 # get all data from neo4j and then export to elasticsearch
