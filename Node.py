@@ -53,4 +53,9 @@ def create_source_address(tx, source_address):
         source_address=source_address
     )
 
+def create_command(tx, command):
+    return tx.run(
+        "MERGE (command: COMMAND{command: $command})",
+        command=command
+    )
 

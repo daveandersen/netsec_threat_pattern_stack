@@ -24,3 +24,9 @@ def create_attack_relationship(tx, source_address, target):
         MATCH (source_address:SOURCE_ADDRESS {source_address: $source_address}), (target:TARGET {target: $target})
         MERGE (source_address)-[:ATTACKS]->(target)
     """, source_address=source_address, target=target)
+
+def create_use_command_relationship(tx, source_address, command):
+    return tx.run ("""
+        MATCH (source_address:SOURCE_ADDRESS {source_address: $source_address}), (command:COMMAND {command: $command})
+        MERGE (source_address)-[:USE]->(command)
+    """, source_address=source_address, command=command)

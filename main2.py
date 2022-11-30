@@ -22,7 +22,21 @@ with driver.session() as session:
         request = document['request_']
         country = document['honeypot_country']
         attacker_location = document['geo_location']
-        threat = document['threat']
+        threats = document['threat']
+        # print(threats)
+        if(request == {}):
+            request['description'] = "SSH Honeypot Cowrie"
+
+        for threat in threats:
+            print(fields['source_address'])
+            # print(threat.get('matching_syntax') is None)
+            if(threat.get('matching_syntax') is None):
+                 session.write_transaction(create_command, threat['unknown_syntax'])
+                 session.write_transaction(create_use_command_relationship, fields['source_address'], threat['unknown_syntax'])
+            else:
+                session.write_transaction(create_command, threat['matching_syntax'])
+                session.write_transaction(create_use_command_relationship, fields['source_address'], threat['matching_syntax'])
+
 
         session.write_transaction(create_source_address, fields['source_address'])
         session.write_transaction(create_country_code, attacker_location['country_code'], attacker_location['country'])
@@ -33,19 +47,19 @@ with driver.session() as session:
         session.write_transaction(create_source_address_and_target_port_relationship, fields['source_address'], fields['target_port'])
         session.write_transaction(create_attack_relationship, fields['source_address'], request['description'])
     
-    # countries = get_country(session)
-    # i = 0
-    # for country in countries.data():
-    #     print(country)
-    #     es.index(index="country", doc_type="countries", id = i,document=country)
-    #     i+=1
+    countries = get_country(session)
+    i = 0
+    for country in countries.data():
+        print(country)
+        es.index(index="country", doc_type="countries", id = i,document=country)
+        i+=1
 
-    attack_relationships = get_attacks_relationship(session)
+    # attack_relationships = get_attacks_relationship(session)
     # i = 0
-    for attack in attack_relationships.data():
-        print(attack)
-        # es.index(index="attack", doc_type="attacks", id = i,document=attack)
-        # i+=1
+    # for attack in attack_relationships.data():
+    #     print(attack)
+    #     es.index(index="attack", doc_type="attacks", id = i,document=attack)
+    #     i+=1
 
 driver.close()
 
