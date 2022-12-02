@@ -41,7 +41,7 @@ def get_registered_in_relationship(tx):
 
 def get_overall_relationship(tx):
  return tx.run(
-        "MATCH p=()-->()"
+        "MATCH p=()-->() RETURN p"
     )
 
 

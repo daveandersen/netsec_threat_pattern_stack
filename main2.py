@@ -7,7 +7,7 @@ from elasticsearch7 import Elasticsearch
 
 
 cluster = MongoClient("mongodb://localhost:27017")
-db = cluster["netsec_project"]
+db = cluster["neo4j"]
 collection = db['ssh_commands']
 
 driver = GraphDatabase.driver(uri = "bolt://localhost:7687", auth=("neo4j", "sgunetsec"))
@@ -28,26 +28,33 @@ with driver.session() as session:
             request['description'] = "SSH Honeypot Cowrie"
 
         for threat in threats:
-            print(fields['source_address'])
+            #print(fields['source_address'])
             # print(threat.get('matching_syntax') is None)
             if(threat.get('matching_syntax') is None):
-                 session.write_transaction(create_command, threat['unknown_syntax'])
-                 session.write_transaction(create_use_command_relationship, fields['source_address'], threat['unknown_syntax'])
+                 session.execute_write(create_command, threat['unknown_syntax'])
+                 session.execute_write(create_use_command_relationship, fields['source_address'], threat['unknown_syntax'])
             else:
-                session.write_transaction(create_command, threat['matching_syntax'])
-                session.write_transaction(create_use_command_relationship, fields['source_address'], threat['matching_syntax'])
+                print(threat['threat_category'])
+                session.execute_write(create_command, threat['matching_syntax'])
+                session.execute_write(create_use_command_relationship, fields['source_address'], threat['matching_syntax'])
+                
+                session.execute_write(create_threat_category, threat['threat_category'])
+                session.execute_write(create_threat_categorized_as_relationship, threat['matching_syntax'], threat['threat_category'])
 
 
-        session.write_transaction(create_source_address, fields['source_address'])
-        session.write_transaction(create_country_code, attacker_location['country_code'], attacker_location['country'])
-        session.write_transaction(create_target_node, request['description'])
-        session.write_transaction(create_target_port, fields['target_port'])
-        session.write_transaction(create_source_address_and_country_relationship, fields['source_address'], attacker_location['country_code'])
-        session.write_transaction(create_source_address_and_registered_country_relationship, fields['source_address'], attacker_location['country_code'])
-        session.write_transaction(create_source_address_and_target_port_relationship, fields['source_address'], fields['target_port'])
-        session.write_transaction(create_attack_relationship, fields['source_address'], request['description'])
+        session.execute_write(create_source_address, fields['source_address'])
+        session.execute_write(create_country_code, attacker_location['country_code'], attacker_location['country'])
+        session.execute_write(create_target_node, request['description'])
+        session.execute_write(create_target_port, fields['target_port'])
+        session.execute_write(create_source_address_and_country_relationship, fields['source_address'], attacker_location['country_code'])
+        session.execute_write(create_source_address_and_registered_country_relationship, fields['source_address'], attacker_location['country_code'])
+        session.execute_write(create_source_address_and_target_port_relationship, fields['source_address'], fields['target_port'])
+        session.execute_write(create_attack_relationship, fields['source_address'], request['description'])
     
     countries = get_country(session)
+    categories = get_threat_category(session)
+    # overallRelationship = get_overall_relationship(session)
+    # print(overallRelationship)
     i = 0
     for country in countries.data():
         print(country)
@@ -60,6 +67,9 @@ with driver.session() as session:
     #     print(attack)
     #     es.index(index="attack", doc_type="attacks", id = i,document=attack)
     #     i+=1
+    
+    i = 0
+    
 
 driver.close()
 

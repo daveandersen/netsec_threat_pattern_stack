@@ -30,3 +30,9 @@ def create_use_command_relationship(tx, source_address, command):
         MATCH (source_address:SOURCE_ADDRESS {source_address: $source_address}), (command:COMMAND {command: $command})
         MERGE (source_address)-[:USE]->(command)
     """, source_address=source_address, command=command)
+    
+def create_threat_categorized_as_relationship(tx, command, threat_category):
+    return tx.run ("""
+        MATCH (command:COMMAND {command: $command}), (threat_category:THREAT_CATEGORY {threat_category: $threat_category})
+        MERGE (command)-[:CATEGORIZED_AS]->(threat_category)
+    """, command=command, threat_category=threat_category)

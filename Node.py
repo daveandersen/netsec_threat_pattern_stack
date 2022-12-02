@@ -58,4 +58,10 @@ def create_command(tx, command):
         "MERGE (command: COMMAND{command: $command})",
         command=command
     )
+    
+def create_threat_category(tx, threat_category):
+    return tx.run(
+        "MERGE (threat_category: THREAT_CATEGORY {threat_category: $threat_category})",
+        threat_category = threat_category
+    )
 
