@@ -64,6 +64,19 @@ def create_threat_category(tx, threat_category):
         "MERGE (threat_category: THREAT_CATEGORY {threat_category: $threat_category})",
         threat_category = threat_category
     )
+    
+def create_threat_purpose(tx, threat_purpose):
+    return tx.run(
+        "MERGE (threat_purpose: THREAT_PURPOSE {threat_purpose: $threat_purpose})",
+        threat_purpose = threat_purpose
+    )
+    
+def create_threat_phase(tx, threat_phase):
+    return tx.run(
+        "MERGE (threat_phase: THREAT_PHASE {threat_phase: $threat_phase})",
+        threat_phase = threat_phase
+    )
+    
 
 def create_behavior(tx, behavior):
     return tx.run(
