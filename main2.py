@@ -102,6 +102,14 @@ with driver.session() as session:
         # print(similarity)
         es.index(index="ip_commands_similarity", doc_type="ip_commands_similarities", id = i, document=similarity)
         i+=1
+        
+    ip_behave_similarity = create_ip_commands_graph_similarity(session)
+    print(ip_behave_similarity.data())
+    i = 0
+    for similarity in ip_behave_similarity.data():
+        # print(similarity)
+        es.index(index="ip_behave_similarity", doc_type="ip_behave_similarities", id = i, document=similarity)
+        i+=1
 driver.close()
 
 # get all data from neo4j and then export to elasticsearch
