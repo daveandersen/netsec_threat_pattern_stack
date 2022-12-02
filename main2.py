@@ -30,27 +30,30 @@ with driver.session() as session:
         # print(fields['source_address'])
         if(request == {}):
             request['description'] = "SSH Honeypot Cowrie"
-
+        
+        behavior = []
         for threat in threats:
             # print(fields['source_address'])
             # print(threat.get('matching_syntax') is None)
-            behavior = []
+
             if(threat.get('matching_syntax') is None):
-                behavior.insert(threat['unknown_syntax'])
+                behavior.append(threat['unknown_syntax'])
                 session.execute_write(create_command, threat['unknown_syntax'])
                 session.execute_write(create_use_command_relationship, fields['source_address'], threat['unknown_syntax'])
-                print("cek")                
+                #print("cek")                
             
             else:
-                behavior.insert(threat['matching_syntax'])
+                behavior.append(threat['matching_syntax'])
                 session.execute_write(create_command, threat['matching_syntax'])
                 session.execute_write(create_use_command_relationship, fields['source_address'], threat['matching_syntax'])
                 
                 session.execute_write(create_threat_category, threat['threat_category'])
                 session.execute_write(create_threat_categorized_as_relationship, threat['matching_syntax'], threat['threat_category'])
-                print("Cek2")
-            # print(hash({"behavior": behavior}))
-            # session.execute_Write(create_behavior, hash(behavior))
+                #print("Cek2")
+
+            #session.execute_write(create_behavior, hash(behavior))
+            
+        print(hash(tuple(behavior)))
         session.execute_write(create_source_address, fields['source_address'])
         session.execute_write(create_country_code, attacker_location['country_code'], attacker_location['country'])
         session.execute_write(create_target_node, request['description'])
