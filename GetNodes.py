@@ -6,6 +6,11 @@ def get_target_node(tx):
 def get_country(tx):
  return tx.run(
         "MATCH (n:COUNTRY) RETURN n"
+    )
+ 
+def get_threat_category(tx):
+    return tx.run(
+        "MATCH (n:THREAT_CATEGORY) RETURN n"
     ) 
 
 def get_target_port(tx):
