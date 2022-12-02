@@ -36,3 +36,9 @@ def create_threat_categorized_as_relationship(tx, command, threat_category):
         MATCH (command:COMMAND {command: $command}), (threat_category:THREAT_CATEGORY {threat_category: $threat_category})
         MERGE (command)-[:CATEGORIZED_AS]->(threat_category)
     """, command=command, threat_category=threat_category)
+    
+def create_behavior_relationship(tx, source_address, behavior):
+    return tx.run ("""
+        MATCH (source_address:SOURCE_ADDRESS {source_address: $source_address}), (behavior:BEHAVIOR {behavior: $behavior})
+        MERGE (source_address)-[:BEHAVE]->(behavior)
+    """, source_address=source_address, behavior=behavior)

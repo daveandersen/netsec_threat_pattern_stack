@@ -51,9 +51,12 @@ with driver.session() as session:
                 session.execute_write(create_threat_categorized_as_relationship, threat['matching_syntax'], threat['threat_category'])
                 #print("Cek2")
 
-            #session.execute_write(create_behavior, hash(behavior))
+            
             
         print(hash(tuple(behavior)))
+        session.execute_write(create_behavior, hash(tuple(behavior)))
+        session.execute_write(create_behavior_relationship, fields['source_address'], hash(tuple(behavior)))
+                
         session.execute_write(create_source_address, fields['source_address'])
         session.execute_write(create_country_code, attacker_location['country_code'], attacker_location['country'])
         session.execute_write(create_target_node, request['description'])
