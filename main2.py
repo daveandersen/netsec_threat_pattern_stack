@@ -1,9 +1,14 @@
+import json
 from pymongo import MongoClient
 from neo4j import GraphDatabase
 from Node import *
 from NodeRelationship import *
 from GetNodes import *
+from CypherQuery import *
 from elasticsearch7 import Elasticsearch
+from graphdatascience import GraphDataScience
+
+
 
 
 cluster = MongoClient("mongodb://localhost:27017")
@@ -11,7 +16,7 @@ db = cluster["neo4j"]
 collection = db['ssh_commands']
 
 driver = GraphDatabase.driver(uri = "bolt://localhost:7687", auth=("neo4j", "sgunetsec"))
-
+# gds = GraphDataScience("bolt://localhost:7687", auth=("neo4j", "sgunetsec"))
 es = Elasticsearch(HOST="http://localhost", PORT=9200)
 
 
@@ -57,20 +62,35 @@ with driver.session() as session:
     # print(overallRelationship)
     i = 0
     for country in countries.data():
-        print(country)
+        # print(country)
         es.index(index="country", doc_type="countries", id = i,document=country)
         i+=1
 
-    # attack_relationships = get_attacks_relationship(session)
-    # i = 0
-    # for attack in attack_relationships.data():
-    #     print(attack)
-    #     es.index(index="attack", doc_type="attacks", id = i,document=attack)
-    #     i+=1
-    
+    attack_relationships = get_attacks_relationship(session)
     i = 0
-    
+    for attack in attack_relationships.data():
+        # print(attack)
+        # print(attack['p'][0]['source_address'])
+        attack_temp_object = {
+            "relationship": attack['p'][1],
+            "properties": {
+              "source": attack['p'][0]['source_address'],
+              "target": attack['p'][2]['target']
+            }
+        }
+        # print(attack_temp_object)
+        es.index(index="attack", doc_type="attacks", id = i,document=attack_temp_object)
+        i+=1
 
+    create_ip_commands_graph(session)
+    ip_commands_similarity = create_ip_commands_graph_similarity(session)
+    # print(ip_commands_similarity.data())
+
+    i = 0
+    for similarity in ip_commands_similarity.data():
+        print(similarity)
+        es.index(index="ip_commands_similarity", doc_type="ip_commands_similarities", id = i, document=similarity)
+        i+=1
 driver.close()
 
 # get all data from neo4j and then export to elasticsearch
