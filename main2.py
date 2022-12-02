@@ -37,7 +37,7 @@ with driver.session() as session:
                 behavior.append(threat['unknown_syntax'])
                 session.execute_write(create_command, threat['unknown_syntax'])
                 session.execute_write(create_use_command_relationship, fields['source_address'], threat['unknown_syntax'])
-                es.index(index="unknown_command", doc_type="unknown_commands", id = i, document=threat['unknown_syntax'])
+                es.index(index="unknown_command", doc_type="unknown_commands", id = i, document=threat)
 
             else:
                 behavior.append(threat['matching_syntax'])
