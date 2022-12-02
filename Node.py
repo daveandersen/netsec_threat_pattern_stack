@@ -65,3 +65,9 @@ def create_threat_category(tx, threat_category):
         threat_category = threat_category
     )
 
+def create_behavior(tx, behavior):
+    return tx.run(
+        "MERGE (behavior: BEHAVIOR {behavior: $behavior})",
+        behavior = behavior
+    )
+
