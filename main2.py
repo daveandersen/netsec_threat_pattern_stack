@@ -8,9 +8,6 @@ from CypherQuery import *
 from elasticsearch7 import Elasticsearch
 from graphdatascience import GraphDataScience
 
-
-
-
 cluster = MongoClient("mongodb://localhost:27017")
 db = cluster["neo4j"]
 collection = db['ssh_commands']
@@ -18,7 +15,6 @@ collection = db['ssh_commands']
 driver = GraphDatabase.driver(uri = "bolt://localhost:7687", auth=("neo4j", "sgunetsec"))
 # gds = GraphDataScience("bolt://localhost:7687", auth=("neo4j", "sgunetsec"))
 es = Elasticsearch(HOST="http://localhost", PORT=9200)
-
 
 with driver.session() as session:
     cursor = collection.find({})
@@ -46,7 +42,6 @@ with driver.session() as session:
                 session.execute_write(create_threat_category, threat['threat_category'])
                 session.execute_write(create_threat_categorized_as_relationship, threat['matching_syntax'], threat['threat_category'])
 
-
         session.execute_write(create_source_address, fields['source_address'])
         session.execute_write(create_country_code, attacker_location['country_code'], attacker_location['country'])
         session.execute_write(create_target_node, request['description'])
@@ -60,6 +55,7 @@ with driver.session() as session:
     categories = get_threat_category(session)
     # overallRelationship = get_overall_relationship(session)
     # print(overallRelationship)
+    
     i = 0
     for country in countries.data():
         # print(country)
