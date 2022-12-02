@@ -16,10 +16,8 @@ driver = GraphDatabase.driver(uri = "bolt://localhost:7687", auth=("neo4j", "sgu
 # gds = GraphDataScience("bolt://localhost:7687", auth=("neo4j", "sgunetsec"))
 es = Elasticsearch(HOST="http://localhost", PORT=9200)
 
-print("start")
 with driver.session() as session:
     cursor = collection.find({})
-    print("lll")
     for document in cursor:
         fields = document['fields']
         request = document['request_']
@@ -32,16 +30,15 @@ with driver.session() as session:
             request['description'] = "SSH Honeypot Cowrie"
         
         behavior = []
+        i = 0
         for threat in threats:
-            # print(fields['source_address'])
-            # print(threat.get('matching_syntax') is None)
-
             if(threat.get('matching_syntax') is None):
+                print("hellooo no matching syntax")
                 behavior.append(threat['unknown_syntax'])
                 session.execute_write(create_command, threat['unknown_syntax'])
                 session.execute_write(create_use_command_relationship, fields['source_address'], threat['unknown_syntax'])
-                #print("cek")                
-            
+                es.index(index="unknown_command", doc_type="unknown_commands", id = i, document=threat['unknown_syntax'])
+
             else:
                 behavior.append(threat['matching_syntax'])
                 session.execute_write(create_command, threat['matching_syntax'])
@@ -49,10 +46,8 @@ with driver.session() as session:
                 
                 session.execute_write(create_threat_category, threat['threat_category'])
                 session.execute_write(create_threat_categorized_as_relationship, threat['matching_syntax'], threat['threat_category'])
-                #print("Cek2")
+            i+=1
 
-            
-            
         print(hash(tuple(behavior)))
         session.execute_write(create_behavior, hash(tuple(behavior)))
         session.execute_write(create_behavior_relationship, fields['source_address'], hash(tuple(behavior)))
