@@ -37,15 +37,15 @@ def create_threat_categorized_as_relationship(tx, command, threat_category):
         MERGE (command)-[:CATEGORIZED_AS]->(threat_category)
     """, command=command, threat_category=threat_category)
     
-def create_threat_for_as_relationship(tx, threat_category, threat_purpose):
+def create_threat_for_relationship(tx, threat_category, threat_purpose):
     return tx.run ("""
-        MATCH (threat_category:THREAT_CATEGORY {threat_category: $threat_category}), (threat_purpose:THREAT_purpose {threat_purpose: $threat_purpose})
+        MATCH (threat_category:THREAT_CATEGORY {threat_category: $threat_category}), (threat_purpose:THREAT_PURPOSE {threat_purpose: $threat_purpose})
         MERGE (threat_category)-[:FOR]->(threat_purpose)
     """, threat_category=threat_category, threat_purpose=threat_purpose)
     
-def create_threat_in_phase_as_relationship(tx, threat_purpose, threat_phase):
+def create_threat_in_phase_relationship(tx, threat_purpose, threat_phase):
     return tx.run ("""
-        MATCH (threat_purpose:THREAT_purpose {threat_purpose: $threat_purpose}), (threat_phase:THREAT_PHASE {threat_phase: $threat_phase})
+        MATCH (threat_purpose:THREAT_PURPOSE {threat_purpose: $threat_purpose}), (threat_phase:THREAT_PHASE {threat_phase: $threat_phase})
         MERGE (threat_purpose)-[:IN_PHASE]->(threat_phase)
     """, threat_purpose=threat_purpose, threat_phase=threat_phase)
     

@@ -16,10 +16,8 @@ driver = GraphDatabase.driver(uri = "bolt://localhost:7687", auth=("neo4j", "sgu
 # gds = GraphDataScience("bolt://localhost:7687", auth=("neo4j", "sgunetsec"))
 es = Elasticsearch(HOST="http://localhost", PORT=9200)
 
-print("start")
 with driver.session() as session:
     cursor = collection.find({})
-    print("lll")
     for document in cursor:
         fields = document['fields']
         request = document['request_']
@@ -46,14 +44,15 @@ with driver.session() as session:
                 behavior.append(threat['matching_syntax'])
                 session.execute_write(create_command, threat['matching_syntax'])
                 session.execute_write(create_use_command_relationship, fields['source_address'], threat['matching_syntax'])
-                
+                print(threat)
+                print("\n")
+                #Start threat pattern behavior categorization
                 session.execute_write(create_threat_category, threat['threat_category'])
                 session.execute_write(create_threat_purpose, threat['threat_purpose'])
                 session.execute_write(create_threat_phase, threat['threat_phase'])
                 session.execute_write(create_threat_categorized_as_relationship, threat['matching_syntax'], threat['threat_category'])
-                session.execute_write(create_threat_for_as_relationship, threat['threat_category'], threat['threat_purpose'])
-                session.execute_write(create_threat_in_phase_as_relationship, threat['threat_purpose'], threat['threat_phase'])
-                #print("Cek2")
+                session.execute_write(create_threat_for_relationship, threat['threat_category'], threat['threat_purpose'])
+                session.execute_write(create_threat_in_phase_relationship, threat['threat_purpose'], threat['threat_phase'])
 
             
             
@@ -98,22 +97,22 @@ with driver.session() as session:
         i+=1
 
     # create_ip_commands_graph(session)
-    ip_commands_similarity = create_ip_commands_graph_similarity(session)
-    # print(ip_commands_similarity.data())
+    # ip_commands_similarity = create_ip_commands_graph_similarity(session)
+    # # print(ip_commands_similarity.data())
 
-    i = 0
-    for similarity in ip_commands_similarity.data():
-        # print(similarity)
-        es.index(index="ip_commands_similarity", doc_type="ip_commands_similarities", id = i, document=similarity)
-        i+=1
+    # i = 0
+    # for similarity in ip_commands_similarity.data():
+    #     # print(similarity)
+    #     es.index(index="ip_commands_similarity", doc_type="ip_commands_similarities", id = i, document=similarity)
+    #     i+=1
         
-    ip_behave_similarity = create_ip_commands_graph_similarity(session)
-    #print(ip_behave_similarity.data())
-    i = 0
-    for similarity in ip_behave_similarity.data():
-        # print(similarity)
-        es.index(index="ip_behave_similarity", doc_type="ip_behave_similarities", id = i, document=similarity)
-        i+=1
+    # ip_behave_similarity = create_ip_behave_graph_similarity(session)
+    # #print(ip_behave_similarity.data())
+    # i = 0
+    # for similarity in ip_behave_similarity.data():
+    #     # print(similarity)
+    #     es.index(index="ip_behave_similarity", doc_type="ip_behave_similarities", id = i, document=similarity)
+    #     i+=1
 driver.close()
 
 # get all data from neo4j and then export to elasticsearch
