@@ -84,9 +84,17 @@ def create_behavior(tx, behavior):
         behavior = behavior
     )
     
+def delete_behavior(tx):
+    return tx.run ("""
+        MATCH (n:BEHAVIOR)
+        DETACH DELETE n
+    """)
+    
 def create_mitre_tactic(tx, mitre_tactic):
     return tx.run(
         "MERGE (mitre_tactic:MITRE_TACTIC {mitre_tactic: $mitre_tactic})",
         mitre_tactic = mitre_tactic
     )
+    
+    
 
