@@ -83,4 +83,10 @@ def create_behavior(tx, behavior):
         "MERGE (behavior: BEHAVIOR {behavior: $behavior})",
         behavior = behavior
     )
+    
+def create_mitre_tactic(tx, mitre_tactic):
+    return tx.run(
+        "MERGE (mitre_tactic:MITRE_TACTIC {mitre_tactic: $mitre_tactic})",
+        mitre_tactic = mitre_tactic
+    )
 

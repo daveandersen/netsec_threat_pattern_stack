@@ -48,9 +48,11 @@ with driver.session() as session:
                 session.execute_write(create_threat_category, threat['threat_category'])
                 session.execute_write(create_threat_purpose, threat['threat_purpose'])
                 session.execute_write(create_threat_phase, threat['threat_phase'])
+                session.execute_write(create_mitre_tactic, threat['mitre_tactic'])
                 session.execute_write(create_threat_categorized_as_relationship, threat['matching_syntax'], threat['threat_category'])
                 session.execute_write(create_threat_for_relationship, threat['threat_category'], threat['threat_purpose'])
                 session.execute_write(create_threat_in_phase_relationship, threat['threat_purpose'], threat['threat_phase'])
+                session.execute_write(create_threat_use_tactic_relationship, fields['source_address'], threat['mitre_tactic'])
                 es.index(index="threat", doc_type="threats", id = i, document=threat)
                 print(threat)
                 print("\n")
@@ -58,7 +60,7 @@ with driver.session() as session:
 
             
             
-        print(hash(tuple(behavior)))
+        # print(hash(tuple(behavior)))
         delete_behavior(session)
         session.execute_write(create_behavior, hash(tuple(behavior)))
         session.execute_write(create_behavior_relationship, fields['source_address'], hash(tuple(behavior)))
@@ -97,7 +99,7 @@ with driver.session() as session:
         es.index(index="attack", doc_type="attacks", id = i,document=attack_temp_object)
         i+=1
 
-    create_ip_commands_graph(session)
+    #create_ip_commands_graph(session)
     ip_commands_similarity = create_ip_commands_graph_similarity(session)
     # print(ip_commands_similarity.data())
 
@@ -106,7 +108,7 @@ with driver.session() as session:
         es.index(index="ip_commands_similarity", doc_type="ip_commands_similarities", id = i, document=similarity1)
         i+=1
     
-    create_ip_behave_graph(session)    
+    #create_ip_behave_graph(session)    
     ip_behave_similarity = create_ip_behave_graph_similarity(session)
     i = 0
     for similarity2 in ip_behave_similarity.data():
@@ -115,4 +117,3 @@ with driver.session() as session:
 driver.close()
 
 # get all data from neo4j and then export to elasticsearch
-        

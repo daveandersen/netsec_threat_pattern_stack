@@ -54,3 +54,9 @@ def create_behavior_relationship(tx, source_address, behavior):
         MATCH (source_address:SOURCE_ADDRESS {source_address: $source_address}), (behavior:BEHAVIOR {behavior: $behavior})
         MERGE (source_address)-[:BEHAVE]->(behavior)
     """, source_address=source_address, behavior=behavior)
+    
+def create_threat_use_tactic_relationship(tx, source_address, mitre_tactic):
+    return tx.run ("""
+        MATCH (source_address:SOURCE_ADDRESS {source_address: $source_address}), (mitre_tactic:MITRE_TACTIC {mitre_tactic: $mitre_tactic})
+        MERGE (source_address)-[:USE_TACTIC]->(mitre_tactic)
+    """, source_address=source_address, mitre_tactic = mitre_tactic)
