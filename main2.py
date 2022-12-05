@@ -32,18 +32,18 @@ with driver.session() as session:
         behavior = []
         i = 0
         for threat in threats:
+
             if(threat.get('matching_syntax') is None):
-                print("hellooo no matching syntax")
                 behavior.append(threat['unknown_syntax'])
                 session.execute_write(create_command, threat['unknown_syntax'])
                 session.execute_write(create_use_command_relationship, fields['source_address'], threat['unknown_syntax'])
                 es.index(index="unknown_command", doc_type="unknown_commands", id = i, document=threat)
+                i+=1
 
             else:
                 behavior.append(threat['matching_syntax'])
                 session.execute_write(create_command, threat['matching_syntax'])
                 session.execute_write(create_use_command_relationship, fields['source_address'], threat['matching_syntax'])
-
                 #Start threat pattern behavior categorization
                 session.execute_write(create_threat_category, threat['threat_category'])
                 session.execute_write(create_threat_purpose, threat['threat_purpose'])
@@ -51,6 +51,10 @@ with driver.session() as session:
                 session.execute_write(create_threat_categorized_as_relationship, threat['matching_syntax'], threat['threat_category'])
                 session.execute_write(create_threat_for_relationship, threat['threat_category'], threat['threat_purpose'])
                 session.execute_write(create_threat_in_phase_relationship, threat['threat_purpose'], threat['threat_phase'])
+                es.index(index="threat", doc_type="threats", id = i, document=threat)
+                print(threat)
+                print("\n")
+                i+=1
 
             
             
