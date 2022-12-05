@@ -22,8 +22,7 @@ with driver.session() as session:
         country = document['honeypot_country']
         attacker_location = document['geo_location']
         threats = document['threat']
-        # print(threats)
-        # print(fields['source_address'])
+
         if(request == {}):
             request['description'] = "SSH Honeypot Cowrie"
         
@@ -52,11 +51,8 @@ with driver.session() as session:
                 session.execute_write(create_threat_in_phase_relationship, threat['threat_purpose'], threat['threat_phase'])
                 session.execute_write(create_threat_use_tactic_relationship, fields['source_address'], threat['mitre_tactic'])
                 es.index(index="threat", doc_type="threats", id = i, document=threat)
-                print(threat)
-                print("\n")
                 i+=1     
             
-        print(hash(tuple(behavior)))
         delete_behavior(session)
         session.execute_write(create_behavior, hash(tuple(behavior)))
         session.execute_write(create_behavior_relationship, fields['source_address'], hash(tuple(behavior)))
@@ -77,7 +73,7 @@ with driver.session() as session:
 
     i = 0
     for country in countries.data():
-        # print(country)
+
         es.index(index="country", doc_type="countries", id = i,document=country)
         i+=1
 
@@ -91,20 +87,20 @@ with driver.session() as session:
               "target": attack['p'][2]['target']
             }
         }
-        # print(attack_temp_object)
+
         es.index(index="attack", doc_type="attacks", id = i,document=attack_temp_object)
         i+=1
 
-    create_ip_commands_graph(session)
+    #create_ip_commands_graph(session)
     ip_commands_similarity = create_ip_commands_graph_similarity(session)
-    # print(ip_commands_similarity.data())
+
 
     i = 0
     for similarity1 in ip_commands_similarity.data():
         es.index(index="ip_commands_similarity", doc_type="ip_commands_similarities", id = i, document=similarity1)
         i+=1
     
-    create_ip_behave_graph(session)    
+    #create_ip_behave_graph(session)    
     ip_behave_similarity = create_ip_behave_graph_similarity(session)
     i = 0
     for similarity2 in ip_behave_similarity.data():
