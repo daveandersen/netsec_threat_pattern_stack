@@ -33,5 +33,10 @@ def create_ip_behave_graph_similarity(tx):
         ORDER BY similarity DESCENDING, IP1, IP2
     """)
 
+def delete_behavior(tx):
+    return tx.run ("""
+        MATCH (n:BEHAVIOR)
+        DETACH DELETE n
+    """)
 
 

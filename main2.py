@@ -58,7 +58,8 @@ with driver.session() as session:
 
             
             
-        #print(hash(tuple(behavior)))
+        print(hash(tuple(behavior)))
+        delete_behavior(session)
         session.execute_write(create_behavior, hash(tuple(behavior)))
         session.execute_write(create_behavior_relationship, fields['source_address'], hash(tuple(behavior)))
                 
@@ -96,7 +97,7 @@ with driver.session() as session:
         es.index(index="attack", doc_type="attacks", id = i,document=attack_temp_object)
         i+=1
 
-    #create_ip_commands_graph(session)
+    create_ip_commands_graph(session)
     ip_commands_similarity = create_ip_commands_graph_similarity(session)
     # print(ip_commands_similarity.data())
 
@@ -105,7 +106,7 @@ with driver.session() as session:
         es.index(index="ip_commands_similarity", doc_type="ip_commands_similarities", id = i, document=similarity1)
         i+=1
     
-    #create_ip_behave_graph(session)    
+    create_ip_behave_graph(session)    
     ip_behave_similarity = create_ip_behave_graph_similarity(session)
     i = 0
     for similarity2 in ip_behave_similarity.data():
