@@ -42,6 +42,11 @@ def get_registered_in_relationship(tx):
  return tx.run(
         "MATCH p=()-[r:REGISTERED_IN]->() RETURN p"
     )
+ 
+def get_threat_behaviour_categorization(tx):
+    return tx.run(
+        "MATCH p=()-[r:USE]-()-[q:CATEGORIZED_AS]-()-[a:FOR]-()-[b:IN_PHASE]->() RETURN p"
+    )
 
 
 def get_overall_relationship(tx):
